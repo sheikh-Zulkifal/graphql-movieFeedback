@@ -5,28 +5,42 @@ import { GET_MOVIES } from '../grapgql/quries';
 
 const FeedbackModal = ({ movie, onClose }) => {
   const [text, setText] = useState('');
-  const [addFeedback] = useMutation(ADD_FEEDBACK, {
+  const [addFeedback, { loading }] = useMutation(ADD_FEEDBACK, {
     refetchQueries: [{ query: GET_MOVIES }],
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const randomAvatar = `https://avatar.iran.liara.run/public/${Math.floor(Math.random() * 1000)}`;
-    await addFeedback({
-      variables: {
-        movieId: movie.id,
-        text,
-        avatar: randomAvatar,
-      },
-    });
-    setText('');
+    
+    try {
+      await addFeedback({
+        variables: {
+          movieId: movie.id,
+          text,
+          avatar: randomAvatar,
+        },
+      });
+      setText('');
+      onClose(); // close modal after submission
+    } catch (error) {
+      console.error("Failed to add feedback:", error);
+      // Optionally show error message to user
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-xl w-96 max-h-[90vh] overflow-y-auto relative">
-        <button className="absolute top-2 right-2 text-gray-500" onClick={onClose}>✖</button>
+   <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
+
+      <div className="bg-white p-6 rounded-xl w-96 max-h-[90vh] overflow-y-auto relative shadow-lg animate-fade-in">
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition"
+          onClick={onClose}
+        >
+          ✖
+        </button>
         <h2 className="text-xl font-semibold mb-4">{movie.name}</h2>
+
         <div className="space-y-3 mb-4">
           {movie.feedback.length > 0 ? (
             movie.feedback.map((fb) => (
@@ -39,6 +53,7 @@ const FeedbackModal = ({ movie, onClose }) => {
             <p className="text-sm text-gray-500">No reviews yet.</p>
           )}
         </div>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <textarea
             rows="3"
@@ -48,8 +63,12 @@ const FeedbackModal = ({ movie, onClose }) => {
             onChange={(e) => setText(e.target.value)}
             required
           />
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Submit Feedback
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            disabled={loading}
+          >
+            {loading ? 'Submitting...' : 'Submit Feedback'}
           </button>
         </form>
       </div>

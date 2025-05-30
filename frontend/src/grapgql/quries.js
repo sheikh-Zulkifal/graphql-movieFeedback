@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 export const GET_MOVIES = gql`
   query GetMovies {
-    movie {
+    movies {
       id
       name
       image
