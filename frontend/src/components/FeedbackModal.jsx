@@ -25,7 +25,6 @@ const FeedbackModal = ({ movie, onClose }) => {
       onClose(); // close modal after submission
     } catch (error) {
       console.error("Failed to add feedback:", error);
-      // Optionally show error message to user
     }
   };
 

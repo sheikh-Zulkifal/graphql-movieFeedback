@@ -47,11 +47,6 @@ export default function AddMoviePage() {
               <MovieCard key={movie.id} movie={movie} />
             ))}
 
-            
-
-            {/* show all movies get all movies */}
-
-
 
           </div>
         </div>
